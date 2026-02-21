@@ -7,7 +7,7 @@ Claude Code plugins and resources by Dan da Cunha.
 ### Add the marketplace
 
 ```bash
-claude /plugin marketplace add https://github.com/dan-cunha/claude-resources/marketplace
+claude /plugin marketplace add dan-cunha/claude-resources
 ```
 
 ### Available plugins
