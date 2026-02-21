@@ -1,0 +1,11 @@
+{
+  "name": "reprompt",
+  "description": "Session continuation prompt generator — captures decisions, state, and references for resuming in a new session",
+  "author": {
+    "name": "Dan da Cunha",
+    "url": "https://github.com/dan-cunha"
+  },
+  "repository": "https://github.com/dan-cunha/claude-resources",
+  "license": "MIT",
+  "keywords": ["session", "continuation", "reprompt", "context"]
+}

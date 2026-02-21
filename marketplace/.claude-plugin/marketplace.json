@@ -1,0 +1,20 @@
+{
+  "name": "ddc-claude-plugins",
+  "owner": {
+    "name": "Dan da Cunha",
+    "url": "https://github.com/dan-cunha"
+  },
+  "metadata": {
+    "description": "Claude Code plugins by Dan da Cunha",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "reprompt",
+      "source": "./plugins/reprompt",
+      "description": "Session continuation prompt generator — captures decisions, state, and references for resuming in a new session",
+      "version": "1.0.0",
+      "keywords": ["session", "continuation", "reprompt", "context"]
+    }
+  ]
+}
