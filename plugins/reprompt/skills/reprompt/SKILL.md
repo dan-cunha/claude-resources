@@ -5,7 +5,7 @@ description: Use when ending a session or context is getting long - generates a 
 
 # Reprompt - Session Continuation Prompt Generator
 
-Generate a structured continuation prompt capturing everything needed to resume in a new session. Save to a timestamped file. No user confirmation needed.
+Generate a structured continuation prompt capturing everything needed to resume in a new session. Save to a descriptively named file. No user confirmation needed.
 
 ## Step 1: Gather Fresh State (run in parallel)
 
@@ -29,9 +29,16 @@ git diff --stat
 git stash list
 ```
 
+```bash
+git worktree list
+```
+
 Also:
 - Call **TaskList** tool to capture pending/in-progress work from this session
 - Use **Glob** to find active plan files: `{CLAUDE_CONFIG_DIR}/plans/*.md`
+- Check for auto-memory files modified today: `{CLAUDE_CONFIG_DIR}/projects/*/memory/*.md`
+- Note the **working directory** (from system context)
+- Check if `CLAUDE_CONFIG_DIR` is set to a non-default value (anything other than `~/.claude`). If so, note the config directory — the user may be running multiple Claude instances.
 
 ## Step 2: Analyze Conversation
 
@@ -58,7 +65,10 @@ Use this template. **Omit empty sections.** Let content dictate length — be co
 [1-2 sentence summary of the overarching task]
 
 ## Current State
+- **Directory:** `path/to/working/dir`
 - **Branch:** `branch-name` | **Status:** [clean / N files modified / stashed]
+- **Worktree:** `path` (if working in a worktree)
+- **Config:** `path/to/config/dir` (only if non-default)
 - **Phase:** [where we are — e.g. "implementing step 3 of 5", "design complete, starting implementation"]
 - **Last action:** [what was the last meaningful thing done]
 
@@ -79,10 +89,13 @@ Use this template. **Omit empty sections.** Let content dictate length — be co
 - **Memory:** [anything written to MEMORY.md or auto-memory this session]
 
 ## Done
-- [Completed item]
+- [Completed item — one line each, keep brief]
+
+## Next Action
+[The single most important thing to do on resume. Be specific — include file paths, function names, or diagnostic data needed to act immediately.]
 
 ## Remaining
-- [ ] [Next step — be specific]
+- [ ] [Additional steps after the next action]
 
 ## Context
 [Environment quirks, debugging discoveries, error patterns, workarounds — things lost between sessions. Omit if nothing notable.]
@@ -91,7 +104,14 @@ Use this template. **Omit empty sections.** Let content dictate length — be co
 - [Unresolved issue]
 ```
 
-**Quality check:** Can someone resume with only this prompt? Is WHY captured for key decisions? Are empty sections omitted?
+### Quality check
+
+Before writing the file, verify:
+- Can someone resume with **only** this prompt? No conversation context needed?
+- Is **WHY** captured for key decisions?
+- Does **Next Action** have enough detail to start immediately?
+- Are **Done** items brief (one line each)?
+- Are empty sections omitted?
 
 ## Step 4: Save the File
 
@@ -101,7 +121,8 @@ Use this template. **Omit empty sections.** Let content dictate length — be co
 
 - `REPROMPT_DIR` = `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/tmp` (use the actual resolved value)
 - `TIMESTAMP` = current date/time as `YYYYMMDD-HHMMSS`
-- `REPROMPT_FILE` = `$REPROMPT_DIR/reprompt-${TIMESTAMP}.md`
+- `SLUG` = a 1-2 word descriptor derived from `$ARGUMENTS` if provided, otherwise from the Goal (e.g., "interval-styling", "mobile-layout", "migration-backup"). Lowercase, hyphenated, no special characters.
+- `REPROMPT_FILE` = `$REPROMPT_DIR/reprompt-${TIMESTAMP}-${SLUG}.md`
 
 ### 4b. Write the file
 
@@ -119,14 +140,16 @@ Output the bootstrap command as **copiable text** so the user can select and cop
 File: [REPROMPT_FILE path]
 
 Bootstrap (copy this):
-Read [REPROMPT_FILE path] and follow its instructions.
+Read [REPROMPT_FILE path] for full context, then continue with the Next Action.
 
 /clear, then paste to continue.
 ```
 
 ## Arguments
 
-If `$ARGUMENTS` is provided (e.g. `/reprompt focus on the API refactor`), treat as emphasis — highlight those aspects more prominently.
+If `$ARGUMENTS` is provided (e.g. `/reprompt focus on the API refactor`), use it two ways:
+1. **Emphasis** — highlight those aspects more prominently in the prompt
+2. **File slug** — derive the filename descriptor from the arguments
 
 ## Notes
 
