@@ -5,8 +5,7 @@
     "url": "https://github.com/dan-cunha"
   },
   "metadata": {
-    "description": "Claude Code plugins by Dan da Cunha",
-    "version": "1.0.0"
+    "description": "Claude Code plugins by Dan da Cunha"
   },
   "plugins": [
     {
