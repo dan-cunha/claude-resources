@@ -123,6 +123,7 @@ Before writing the file, verify:
 - `TIMESTAMP` = current date/time as `YYYYMMDD-HHMMSS`
 - `SLUG` = a 1-2 word descriptor derived from `$ARGUMENTS` if provided, otherwise from the Goal (e.g., "interval-styling", "mobile-layout", "migration-backup"). Lowercase, hyphenated, no special characters.
 - `REPROMPT_FILE` = `$REPROMPT_DIR/reprompt-${TIMESTAMP}-${SLUG}.md`
+- `REPROMPT_FILE_DISPLAY` = the same path but with `$HOME` replaced by `~` (e.g., `~/.config/claude-code/sweetwater/tmp/reprompt-...`). Use this for all user-facing output.
 
 ### 4b. Write the file
 
@@ -137,10 +138,10 @@ Output the bootstrap command as **copiable text** so the user can select and cop
 
 ```
 --- reprompt saved ---
-File: [REPROMPT_FILE path]
+File: [REPROMPT_FILE_DISPLAY path]
 
 Bootstrap (copy this):
-Read [REPROMPT_FILE path] for full context, then continue with the Next Action.
+@[REPROMPT_FILE_DISPLAY path] — read this for full context, then continue with the Next Action.
 
 /clear, then paste to continue.
 ```
