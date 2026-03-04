@@ -1,6 +1,6 @@
 {
   "name": "reprompt",
-  "description": "Session continuation prompt generator — captures decisions, state, and references for resuming in a new session",
+  "description": "Living reprompt documents — create, update, and load project-scoped continuation prompts that persist across sessions",
   "author": {
     "name": "Dan da Cunha",
     "url": "https://github.com/dan-cunha"
