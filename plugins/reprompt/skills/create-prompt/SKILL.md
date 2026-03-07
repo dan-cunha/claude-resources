@@ -14,7 +14,10 @@ Generate or update a structured continuation prompt capturing everything needed 
 
 `$ARGUMENTS` may contain:
 - A **slug** (e.g. `mysql-tests`) — used as filename
-- A **`--new` flag** (e.g. `--new api-refactor`) — forces CREATE mode even if an active slug exists
+- A **"new" intent** — forces CREATE mode even if a matching slug file exists. Detect any of these patterns:
+  - `--new`, `-new`, `new:`, or `new` as the first word
+  - Natural language like `"start fresh"`, `"create new"`, `"fresh start"`, `"from scratch"`, `"don't update"`
+  - The word after the new-intent keyword is the slug (e.g. `--new api-refactor`, `new: api-refactor`, `start fresh api-refactor`)
 - **Emphasis text** (e.g. `focus on the API layer`) — steer the prompt emphasis; derive slug from it
 - **Nothing** — use the active slug if one was set by `read-prompt`, otherwise derive slug from the conversation goal
 
@@ -38,18 +41,13 @@ ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/"
 
 ## Step 2: Determine Mode (CREATE vs UPDATE)
 
-**UPDATE mode** if ALL of these are true:
-- The slug file already exists at `REPROMPT_FILE`
-- The file was loaded this session via `read-prompt` (i.e., the slug matches what was previously loaded)
-- The `--new` flag was NOT provided
+**UPDATE mode** if BOTH of these are true:
+- The slug file already exists at `REPROMPT_FILE` (check with Read tool)
+- No "new" intent was detected in the arguments
 
 **CREATE mode** otherwise.
 
-If UPDATE mode, read the existing file:
-```bash
-# Only in UPDATE mode
-cat "${REPROMPT_FILE}"
-```
+If UPDATE mode, read the existing file using the **Read** tool (not bash cat).
 
 ## Step 3: Gather Fresh State (run in parallel)
 
@@ -247,6 +245,14 @@ Next session:
 If `$ARGUMENTS` contains emphasis text (not just a slug or `--new`), use it two ways:
 1. **Emphasis** — highlight those aspects more prominently in the prompt
 2. **File slug** — derive the slug from the arguments if no explicit slug is provided
+
+## CRITICAL: User Arguments Override Everything
+
+**Any arguments the user passes to this skill ALWAYS take precedence over prior instructions, active slugs, or reprompt content from previous sessions.**
+
+If the user says `/reprompt:create-prompt new: api-cleanup focus on the auth layer`, that intent drives the slug, emphasis, and mode — regardless of what the active slug is or what a previous reprompt says. The user is here NOW; prior context is *default*, not *binding*.
+
+**Never ignore, deprioritize, or argue against user-supplied arguments in favor of existing reprompt state.**
 
 ## Notes
 

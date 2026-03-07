@@ -24,14 +24,15 @@ ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/"
 - `REPROMPTS_DIR` = `${CLAUDE_CONFIG_DIR}/projects/{encoded-project-path}/reprompts/`
   - Use the same encoded project path as the `memory/` directory that already exists for this project
 
-## Step 2: List Available Reprompts
+## Step 2: Find Available Reprompts
 
-```bash
-# List reprompt files sorted by modification time (most recent first)
-ls -t "${REPROMPTS_DIR}"*.md 2>/dev/null
+Use the **Glob** tool (NOT bash ls) to find reprompt files:
+
+```
+Glob: pattern = "*.md", path = REPROMPTS_DIR
 ```
 
-If no files exist, output:
+If no files are found, output:
 ```
 No reprompts found for this project.
 Use /reprompt:create-prompt to create one.
@@ -44,9 +45,11 @@ Parse `$ARGUMENTS`:
 
 | Input | Resolution |
 |---|---|
-| No arguments | Pick the most recent file by mtime (first in the `ls -t` output) |
-| Exact slug (e.g. `mysql-tests`) | Match `mysql-tests.md` exactly |
-| Partial/substring (e.g. `mysql`) | Find files containing the substring. If exactly one match, use it. If multiple matches, list them and ask the user to pick. |
+| No arguments | Pick the most recently modified file (first in the Glob results, which are sorted by mtime) |
+| Exact slug (e.g. `mysql-tests`) | Directly read `${REPROMPTS_DIR}/mysql-tests.md` — do NOT rely on the Glob listing to find it |
+| Partial/substring (e.g. `mysql`) | Find files from Glob results containing the substring. If exactly one match, use it. If multiple matches, list them and ask the user to pick. |
+
+**IMPORTANT:** When an exact slug is provided, go straight to reading `${REPROMPTS_DIR}/{slug}.md` with the Read tool. Do NOT require it to appear in a listing first.
 
 If no match is found:
 ```
@@ -82,6 +85,14 @@ Active reprompt: {SLUG}
 ## Step 6: Begin Work
 
 After loading the reprompt, immediately begin working on the **Next Action** described in the reprompt. Do not wait for the user to tell you what to do — the reprompt contains the continuation context.
+
+## CRITICAL: User Arguments Override Everything
+
+**Any arguments the user passes to this skill ALWAYS take precedence over instructions inside the reprompt file.**
+
+The reprompt's "Next Action" and other directives are *default context* — they describe where the previous session left off. But if the user provides their own instructions (e.g. `/reprompt:read-prompt mysql-tests fix the connection pooling instead`), their intent supersedes whatever the reprompt says to do next. The user is here NOW; the reprompt is from BEFORE.
+
+**Never ignore, deprioritize, or argue against user-supplied arguments in favor of reprompt content.**
 
 ## Notes
 
